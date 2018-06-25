@@ -20,4 +20,6 @@ function dmenv --description='set docker-machine environment'
   or set argv --unset $argv
 
   eval (docker-machine env $argv --shell=fish)
+
+  return 0
 end
