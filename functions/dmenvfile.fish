@@ -3,6 +3,8 @@ function dmenvfile --description='Evaluate env files for current Docker machine'
   (fish_opt --short=h --long=help) \
   (fish_opt --short=d --long=dir --required-val) \
   (fish_opt --short=n --long=no-interpret) \
+  (fish_opt --short=G --long=no-global) \
+  (fish_opt --short=u --long=unexport) \
   (fish_opt --short=p --long=print)
 
   argparse $options -- $argv
@@ -15,7 +17,7 @@ function dmenvfile --description='Evaluate env files for current Docker machine'
       	$fn ( --help | -h )
       		This help message
 
-      	$fn [ -d ENVDIR | --dir=ENVDIR ] [ -n | --no-interpret ] [ -p | --print ]
+      	$fn [OPTIONS]
 
       		Source env files from a directory (default: ./env),
       		based on machine name and machine driver.
@@ -25,6 +27,14 @@ function dmenvfile --description='Evaluate env files for current Docker machine'
 
       	-p, --print
       		Print the commands to STDOUT instead of evaluating them
+
+      	-G, --no-global
+      		By default, variables will be set globally. This flag causes
+      		variables to be unset at the end of the block.
+
+      	-u, --unexport
+      		By default, variables will be exported to child processes.
+      		This flag prevents that.
 
       	-n, --no-interpret
       		By default, variables in env files will be interpreted. Pass
@@ -40,27 +50,36 @@ function dmenvfile --description='Evaluate env files for current Docker machine'
   and set envDir $_flag_dir
   or set envDir env
 
-  set filesToTry default
-
   set -q DOCKER_MACHINE_NAME
-  and set -gx machineName $DOCKER_MACHINE_NAME
-  or set -gx machineName localhost
+  and set -l machineName $DOCKER_MACHINE_NAME
+  or set -l machineName localhost
+
+  set tmpfile /tmp/dmenvfile-(date +%s).env
+
+  echo "machineName=$machineName" > $tmpfile
+
+  set filesToTry $envDir/default.env $tmpfile
 
   [ $machineName != localhost ]
-  and set filesToTry $filesToTry (docker-machine inspect $machineName --format '{{.DriverName}}' ^/dev/null)
+  and set filesToTry $filesToTry $envDir/(docker-machine inspect $machineName --format '{{.DriverName}}' ^/dev/null).env
 
-  set filesToTry $filesToTry $machineName
+  set filesToTry $filesToTry $envDir/$machineName.env
 
-  set psFlags
   set -q _flag_no_interpret
   and set psFlags --no-interpret
   set -q _flag_print
   and set psFlags --print $psFlags
+  set -q _flag_unexport
+  and set psFlags --unexport $psFlags
+  set -q _flag_no_global
+  and set psFlags --no-global $psFlags
 
   for fileToTry in $filesToTry
-    [ -f $envDir/$fileToTry.env ]
-    and posix-source $envDir/$fileToTry.env $psFlags
+    [ -f $fileToTry ]
+    and posix-source $fileToTry $psFlags
   end
+
+  rm -f $tmpfile
 
   return 0
 end
