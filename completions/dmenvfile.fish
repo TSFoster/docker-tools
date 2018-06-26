@@ -1,0 +1,5 @@
+complete --command=dmenvfile --no-files --description='Evaluate env files for current Docker machine'
+complete --command=dmenvfile --short-option=h --long-option=help --description='Print help'
+complete --command=dmenvfile --short-option=d --long-option=dir --require-parameter --description='Set dir env files are in (default: ./env)'
+complete --command=dmenvfile --short-option=n --long-option=no-interpret --description='Don’t interpret variable declarations in env files'
+complete --command=dmenvfile --short-option=p --long-option=print --description='Print variable declarations'
