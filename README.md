@@ -4,13 +4,17 @@ Functions and commands for working with Docker and Docker Machine
 
 ## Install
 
-With [fisherman]
+With [fisherman](https://github.com/fisherman/fisherman):
 
 ```
 fisher TSFoster/docker-tools
 ```
 
 ## Usage
+
+- [`dmenv`](#dmenv)
+- [`dmenvfile`](#dmenvfile)
+- [`dbuild`](#dbuild)
 
 ### `dmenv`
 
@@ -119,4 +123,15 @@ dmenv awesome-project-dev
 4.  `env/awesome-project-dev.env` doesn’t exist, so skipped
 5.  Deploys stack.yml
 
-[fisherman]: https://github.com/fisherman/fisherman
+### `dbuild`
+
+`dbuild` will source an env file before trying to build and optionally push the images specified. It follows some basic rules for finding the env file and the appropriate build directories, but the settings can be overwritten.
+
+```fish
+dbuild --help # Print help
+dbuild backup database nginx # Build images defined in ./backup/Dockerfile ./database/Dockerfile and ./nginx/Dockerfile, sourcing ./env/build.env first
+dbuild --force-push --env-file=./buildSettings.env --registry-url=registry.gitlab.com/tsfoster/awesome-project reverseproxy rails database
+set -x dbuildRegistryUrl tsfoster
+echo dbuildValidImages=reverseproxy api-server > env/build.env
+dbuild --no-push reverseproxy --build-path=traefik api-server --build-path=drupal incorrect-image-name --build-path=incorrect-image-name
+```
