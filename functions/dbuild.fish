@@ -2,9 +2,9 @@ function dbuild --description='Build Docker images'
   set -l options \
   (fish_opt --short=n --long=no-push) \
   (fish_opt --short=f --long=force-push) \
-  (fish_opt --short=e --long=env-file --multiple-vals) \
+  (fish_opt --short=v --long=env-file --multiple-vals) \
   (fish_opt --short=u --long=registry-url --required-val) \
-  (fish_opt --short=p --long=build-path --multiple-vals) \
+  (fish_opt --short=d --long=dir --multiple-vals) \
   (fish_opt --short=e --long=erase) \
   (fish_opt --short=h --long=help)
 
@@ -40,7 +40,7 @@ function dbuild --description='Build Docker images'
       		Push the built image, even if no change to the build
       		is detected.
 
-      	-e FILE, --env-file=FILE
+      	-v FILE, --env-file=FILE
       		By default, env/build.env is sourced if it exists.
       		This flag allows for different files to be specified.
 
@@ -48,7 +48,7 @@ function dbuild --description='Build Docker images'
       		A common prefix to the build tags can be specified,
       		either with this flag or by setting \$dbuildRegistryUrl.
 
-      	-p PATH, --build-path=PATH
+      	-d PATH, --dir=PATH
       		By default, a Dockerfile is searched for in a directory
       		with the image name, then in \$PWD. This flag will
       		overwrite these locations. The flag can be used once for
@@ -98,8 +98,8 @@ function dbuild --description='Build Docker images'
   set -q dbuildBuildPaths
   and set buildPaths $dbuildBuildPaths
 
-  set -q _flag_build_path
-  and set buildPaths $_flag_build_path
+  set -q _flag_dir
+  and set buildPaths $_flag_dir
 
   dmenv
 
