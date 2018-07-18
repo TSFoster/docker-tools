@@ -5,7 +5,8 @@ function dmenvfile --description='Evaluate env files for current Docker machine'
   (fish_opt --short=n --long=no-interpret) \
   (fish_opt --short=G --long=no-global) \
   (fish_opt --short=u --long=unexport) \
-  (fish_opt --short=p --long=print)
+  (fish_opt --short=p --long=print) \
+  (fish_opt --short=e --long=erase)
 
   argparse $options -- $argv
 
@@ -41,7 +42,10 @@ function dmenvfile --description='Evaluate env files for current Docker machine'
       		this argument to interpret dollar signs as literal characters.
 
       	-d ENVDIR, --dir=ENVDIR
-      		Set directory to find env files (default: \$PWD/env)."\
+      		Set directory to find env files (default: \$PWD/env).
+
+      	-e, --erase
+      		Erase variables set in relevant env files."\
     | string replace --all --regex '(^ +)' ''
     return 0
   end
@@ -73,6 +77,8 @@ function dmenvfile --description='Evaluate env files for current Docker machine'
   and set psFlags --unexport $psFlags
   set -q _flag_no_global
   and set psFlags --no-global $psFlags
+  set -q _flag_erase
+  and set psFlags --erase $psFlags
 
   for fileToTry in $filesToTry
     [ -f $fileToTry ]

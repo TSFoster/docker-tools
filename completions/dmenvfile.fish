@@ -5,3 +5,4 @@ complete --command=dmenvfile --short-option=n --long-option=no-interpret --descr
 complete --command=dmenvfile --short-option=p --long-option=print --description='Print variable declarations'
 complete --command=dmenvfile --short-option=G --long-option=no-global --description='Unset variable at end of block'
 complete --command=dmenvfile --short-option=u --long-option=unexport --description='Don’t export variable to child processes'
+complete --command=dmenvfile --short-option=e --long-option=erase --description='Erase variables defined in relevant env files'
