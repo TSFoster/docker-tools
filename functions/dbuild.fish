@@ -63,7 +63,7 @@ function dbuild --description='Build Docker images'
 
   for envFile in $envFiles
     [ -f "$envFile" ]
-    and posix-source -G $envFile
+    and posix-source $envFile
     or echo "$envFile doesn’t exist, not sourcing" >&2
   end
 
