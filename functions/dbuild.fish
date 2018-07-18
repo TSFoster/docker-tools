@@ -5,7 +5,7 @@ function dbuild --description='Build Docker images'
   (fish_opt --short=e --long=env-file --multiple-vals) \
   (fish_opt --short=u --long=registry-url --required-val) \
   (fish_opt --short=p --long=build-path --multiple-vals) \
-  (fish_opt --short=n --long=no-erase) \
+  (fish_opt --short=e --long=erase) \
   (fish_opt --short=h --long=help)
 
   argparse $options -- $argv
@@ -55,9 +55,8 @@ function dbuild --description='Build Docker images'
       		each image specified. Alternatively, \$dbuildBuildPaths
       		can be set.
 
-      	-n, --no-erase
-      		By default, this function will erase all variables defined
-      		in the build env file. Set this flag to stop cleanup."\
+      	-e, --erase
+      		Erase all variables defined in env files afterwards."\
     | string replace --all --regex '(^ +)' ''
     return 0
   end
@@ -91,8 +90,8 @@ function dbuild --description='Build Docker images'
   if [ (count $toBuild) -eq 0 ]
     echo 'Don’t know what to build!' >&2
     echo 'Try setting $dbuildValidImages, or passing image names as arguments' >&2
-    set -q _flag_no_erase
-    or posix-source -e $envFiles
+    set -q _flag_erase
+    and posix-source -e $envFiles
     return 1
   end
 
@@ -142,8 +141,8 @@ function dbuild --description='Build Docker images'
     end
   end
 
-  set -q _flag_no_erase
-  or posix-source -e $envFiles
+  set -q _flag_erase
+  and posix-source -e $envFiles
 
   return 0
 end
