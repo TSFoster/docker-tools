@@ -55,19 +55,19 @@ function dmenvfile --description='Evaluate env files for current Docker machine'
   or set envDir env
 
   set -q DOCKER_MACHINE_NAME
-  and set -l machineName $DOCKER_MACHINE_NAME
-  or set -l machineName localhost
+  and set -l DMN $DOCKER_MACHINE_NAME
+  or set -l DMN localhost
 
   set tmpfile /tmp/dmenvfile-(date +%s).env
 
-  echo "machineName=$machineName" > $tmpfile
+  echo "machineName=$DMN" > $tmpfile
 
   set filesToTry $envDir/default.env $tmpfile
 
-  [ $machineName != localhost ]
-  and set filesToTry $filesToTry $envDir/(docker-machine inspect $machineName --format '{{.DriverName}}' ^/dev/null).env
+  [ $DMN != localhost ]
+  and set filesToTry $filesToTry $envDir/(docker-machine inspect $DMN --format '{{.DriverName}}' ^/dev/null).env
 
-  set filesToTry $filesToTry $envDir/$machineName.env
+  set filesToTry $filesToTry $envDir/$DMN.env
 
   set -q _flag_no_interpret
   and set psFlags --no-interpret
